@@ -1,8 +1,9 @@
 # BACKBONE OF THE API
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import List, Dict, Any, Optional
-import nmap
+import socket
+from typing import List, Dict, Optional
+from datetime import datetime
 from urllib.parse import urlparse # Pro čištění URL
 
 # Import vlastních modulů (předpokládám, že soubory existují)
@@ -16,7 +17,6 @@ except ImportError:
     def returnWordList(): return ["admin", "login", "test"]
 
 # Inicializace Nmapu a načtení konfigurace
-NM = nmap.PortScanner()
 PORTS = returnPorts()
 WORD_LIST = returnWordList()
 
@@ -29,15 +29,22 @@ class ScanRequest(BaseModel):
     # Přejmenoval jsem na 'target', protože to může být IP i doména
     target: str 
 
+class PortStats(BaseModel):
+    protocol: str = "TCP"  # Výchozí hodnota
+    status: str
+    banner: Optional[str] = None
+    service: Optional[str] = None  # např. "http", "ssh"
+    version: Optional[str] = None  # např. "OpenSSH 8.2"
+    scan_time: datetime
+
 class ScanResponse(BaseModel):
     target: str
     info: str
-    # Změněno na Dict - Pydantic očekává objekt, ne string z json.dumps
-    ports: Dict[str, Any] 
+    ports: Dict[int, PortStats] 
     endpoints: List[str]
 
-# --- POMOCNÉ FUNKCE ---
 
+# --- POMOCNÉ FUNKCE ---
 def ziskej_cisteho_hosta(raw_target: str) -> str:
     """
     Převede 'https://site.com/admin' -> 'site.com'
@@ -51,25 +58,53 @@ def ziskej_cisteho_hosta(raw_target: str) -> str:
     # Vrátí hostname (doménu nebo IP) bez cesty a portu
     return parsed.hostname or parsed.path
 
-def run_nmap_scan(host: str, ports: str) -> Dict:
-    try:
-        # PŘIDÁNO: '-Pn' (Treat all hosts as online -- skip host discovery)
-        # PŘIDÁNO: '-F' (Fast mode - pokud máš hodně portů, urychlí to test)
-        NM.scan(hosts=host, ports=ports, arguments='-Pn -sV')
-        
-        if host in NM.all_hosts():
-            return NM[host]
-        else:
-            # Pokud i s -Pn nic nevrátí, může být problém v síti nebo právech
-            return {"status": "error", "message": f"Nmap nenašel žádná data pro {host}."}
-    except Exception as e:
-        return {"error": str(e)}
+def scan_to_dict(ip: str, ports_to_scan: list[int]) -> Dict[int, PortStats]:
+    ports_results = {}
+    
+    for port in ports_to_scan:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(0.5)
+            # connect_ex vrací 0 pokud je port otevřený
+            result = s.connect_ex((ip, port))
+            
+            if result == 0:
+                # 1. Získání banneru
+                banner = None
+                try:
+                    banner_raw = s.recv(1024)
+                    if banner_raw:
+                        banner = banner_raw.decode('utf-8', errors='ignore').strip()
+                except socket.timeout:
+                    banner = "Timeout (No banner)"
+                except Exception:
+                    banner = "Error reading banner"
 
-# --- ENDPOINTY ---
+                # 2. Získání názvu služby
+                try:
+                    service = socket.getservbyport(port, "tcp")
+                except:
+                    service = "unknown"
 
-# Důležité: Používám 'def' místo 'async def'. 
-# FastAPI automaticky hodí tuto funkci do threadpoolu, 
-# takže dlouhý Nmap scan nezablokuje celý server.
+                # 3. Vytvoření objektu a uložení do dictu pod klíčem portu
+                ports_results[port] = PortStats(
+                    status="open",
+                    banner=banner,
+                    service=service,
+                    scan_time=datetime.now()
+                )
+            else:
+                # Volitelně můžeš ukládat i zavřené porty, 
+                # ale u scraperů se většinou ukládají jen ty otevřené.
+                pass
+                
+    return ports_results
+
+
+
+
+    pass
+
+
 @app.post("/", response_model=ScanResponse)
 def scanner(request: ScanRequest):
     
@@ -81,7 +116,7 @@ def scanner(request: ScanRequest):
 
     # 2. Spuštění scanu
     # (Tady bys v budoucnu mohl přidat i logiku pro endpoints/wordlist)
-    scan_data = run_nmap_scan(clean_target, PORTS)
+    scan_data = scan_to_dict(clean_target)
     
     nalezené_cesty = ["/admin", "/login"] # Zatím hardcoded demo
 
