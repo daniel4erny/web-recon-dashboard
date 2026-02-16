@@ -111,15 +111,25 @@ async def scan_generator(target_host: str, ports: List[int]):
     semaphore = asyncio.Semaphore(100) # Max 100 souběžných spojení
     
     # Vytvoříme tasks
+    # Vytvoříme tasks
     tasks = [check_port(ip, p, semaphore) for p in ports]
+    total_ports = len(tasks)
+    completed_count = 0
     
     # Použijeme as_completed pro streamování výsledků ihned jak jsou hotové
     for future in asyncio.as_completed(tasks):
         result = await future
+        completed_count += 1
+        
+        # Každých 10 portů nebo při dokončení pošleme progress
+        if completed_count % 10 == 0 or completed_count == total_ports:
+            progress = round((completed_count / total_ports) * 100, 2)
+            yield json.dumps({"progress": progress + "%"}) + "\n"
+
         if result:
             yield json.dumps(result) + "\n"
 
-    yield json.dumps({b"info": "Skenování dokončeno."}) + "\n"
+    yield json.dumps({"info": "Skenování dokončeno."}) + "\n"
 
 # --- APLIKACE ---
 
