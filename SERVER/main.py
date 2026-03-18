@@ -148,3 +148,10 @@ async def scanner(request: ScanRequest):
 @app.get("/")
 def test():
     return {"status": "Server běží", "ports_to_scan": len(PORTS), "words_to_scan": len(WORDS)}
+
+@app.head("/")  # <--- Tohle přidej, aby Render dostal 200 OK
+def test():
+    return {
+        "status": "Server běží",
+        "loaded_ports_count": len(PORTS)
+    }
