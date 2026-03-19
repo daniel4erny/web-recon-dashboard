@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RESTRICTED ACCESS</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-tint": "#81ecff",
+              "primary-fixed-dim": "#00d4ec",
+              "surface-bright": "#2c2c2c",
+              "on-surface-variant": "#adaaaa",
+              "error-dim": "#d7383b",
+              "primary": "#81ecff",
+              "tertiary-fixed": "#00fc40",
+              "surface-container-high": "#20201f",
+              "on-tertiary": "#006413",
+              "error": "#ff716c",
+              "tertiary": "#9cff93",
+              "surface-variant": "#262626",
+              "primary-dim": "#00d4ec",
+              "outline-variant": "#484847",
+              "on-tertiary-fixed": "#00440a",
+              "on-primary-container": "#004d57",
+              "tertiary-fixed-dim": "#00ec3b",
+              "secondary-fixed": "#c0d1ff",
+              "secondary-dim": "#0f6df3",
+              "on-surface": "#ffffff",
+              "on-tertiary-container": "#005a10",
+              "on-tertiary-fixed-variant": "#006513",
+              "primary-container": "#00e3fd",
+              "on-primary-fixed-variant": "#005762",
+              "on-background": "#ffffff",
+              "surface-container-low": "#131313",
+              "surface-container-lowest": "#000000",
+              "tertiary-dim": "#00ec3b",
+              "secondary-fixed-dim": "#acc3ff",
+              "secondary": "#6e9bff",
+              "inverse-on-surface": "#565555",
+              "on-secondary-fixed-variant": "#004baf",
+              "surface-dim": "#0e0e0e",
+              "on-error": "#490006",
+              "surface-container": "#1a1a1a",
+              "on-secondary-fixed": "#003076",
+              "on-primary-fixed": "#003840",
+              "error-container": "#9f0519",
+              "inverse-primary": "#006976",
+              "outline": "#767575",
+              "tertiary-container": "#00fc40",
+              "background": "#0e0e0e",
+              "secondary-container": "#0058ca",
+              "on-secondary": "#001d4e",
+              "surface": "#0e0e0e",
+              "on-secondary-container": "#f7f7ff",
+              "surface-container-highest": "#262626",
+              "on-primary": "#005762",
+              "inverse-surface": "#fcf9f8",
+              "on-error-container": "#ffa8a3",
+              "primary-fixed": "#00e3fd"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            font-size: 20px;
+        }
+        .cyber-grid {
+            background-image:
+                linear-gradient(to right, rgba(0, 229, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 229, 255, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .vignette {
+            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.8) 100%);
+        }
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, rgba(129, 236, 255, 0.2), transparent);
+            position: absolute;
+            top: 0;
+            animation: scanning 8s linear infinite;
+        }
+        @keyframes scanning {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface selection:bg-primary/30 selection:text-primary overflow-hidden h-screen flex flex-col">
+<!-- TopAppBar (Transactional Suppression Mode: Logo Only) -->
+<header class="fixed top-0 w-full z-50 bg-[#0e0e0e]/70 backdrop-blur-md flex justify-center items-center px-8 h-16 w-full">
+<div class="text-xl font-headline font-bold tracking-[0.2em] text-primary">SENTINEL</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="relative flex-1 flex flex-col items-center justify-center p-6 bg-surface">
+<!-- Ambient Background Layers -->
+<div class="absolute inset-0 cyber-grid pointer-events-none"></div>
+<div class="absolute inset-0 vignette pointer-events-none"></div>
+<div class="scanline pointer-events-none"></div>
+<!-- Central Login Container -->
+<div class="relative z-10 w-full max-w-md space-y-12 text-center">
+<!-- System Identity -->
+<div class="space-y-4">
+<div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-surface-container-high shadow-[0_10px_40px_rgba(0,227,253,0.08)] mb-4">
+<span class="material-symbols-outlined text-primary text-4xl" data-icon="shield_lock" style="font-variation-settings: 'FILL' 1;">shield_lock</span>
+</div>
+<h1 class="font-headline text-3xl font-light tracking-tight text-on-surface">RESTRICTED ACCESS</h1>
+<p class="font-body text-on-surface-variant text-sm tracking-wide uppercase">Operational Layer 04 • Encryption Active</p>
+</div>
+<!-- Login Interaction Area -->
+<form id="auth-form" class="space-y-6">
+<div class="group relative">
+<!-- Password Field -->
+<div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-on-surface-variant group-focus-within:text-primary transition-colors" data-icon="key">key</span>
+</div>
+<input id="operator-key" name="key" required class="w-full h-14 bg-surface-container-highest border-none focus:ring-0 text-primary font-mono tracking-widest pl-12 pr-4 rounded-lg placeholder:text-on-surface-variant/40 placeholder:font-body placeholder:tracking-normal transition-all duration-300" placeholder="ENTER OPERATOR KEY" type="password"/>
+<!-- Focus Glow Effect (Ghost Border) -->
+<div class="absolute inset-0 -m-[1px] rounded-lg border border-secondary/20 opacity-0 group-focus-within:opacity-100 pointer-events-none shadow-[0_0_15px_rgba(110,155,255,0.1)]"></div>
+</div>
+<!-- Error message container -->
+<p id="error-message" class="text-error-dim text-sm mt-2 hidden">Invalid Operator Key.</p>
+<!-- Action Button -->
+<button id="submit-btn" class="w-full h-14 bg-gradient-to-r from-primary to-primary-container text-on-primary font-headline font-bold uppercase tracking-[0.1em] text-sm rounded-lg hover:shadow-[0_0_20px_rgba(0,227,253,0.3)] active:scale-95 transition-all duration-200" type="submit">
+                    Unlock System
+                </button>
+</form>
+<!-- Technical Status Footer (Login Specific) -->
+<div class="flex items-center justify-between px-2">
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed animate-pulse"></div>
+<span class="font-label text-[10px] text-tertiary uppercase tracking-widest">Biometric Link Ready</span>
+</div>
+<div class="text-[10px] text-on-surface-variant font-mono uppercase">Node: 192.168.1.1</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-[#0e0e0e] w-full py-4 px-8 mt-auto border-t border-[#484847]/20 flex justify-between items-center w-full">
+<div class="font-['Inter'] text-[10px] tracking-tight text-[#adaaaa] uppercase">
+            © 2024 KINETIC SENTINEL. ENCRYPTED OPERATIONAL LAYER.
+        </div>
+<div class="flex gap-6">
+<a class="font-['Inter'] text-[10px] tracking-tight text-[#adaaaa] hover:text-[#00E5FF] transition-colors opacity-80 hover:opacity-100 uppercase" href="#">Security Protocol</a>
+<a class="font-['Inter'] text-[10px] tracking-tight text-[#adaaaa] hover:text-[#00E5FF] transition-colors opacity-80 hover:opacity-100 uppercase" href="#">API Status</a>
+</div>
+</footer>
+
+<script>
+    document.getElementById('auth-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const key = document.getElementById('operator-key').value;
+        const errorMessage = document.getElementById('error-message');
+        const submitBtn = document.getElementById('submit-btn');
+
+        // Reset error
+        errorMessage.classList.add('hidden');
+        submitBtn.innerText = 'AUTHENTICATING...';
+
+        try {
+            const response = await fetch('/api/auth', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ key })
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                // Redirect back to root where middleware will now let us through
+                submitBtn.innerText = 'ACCESS GRANTED';
+                submitBtn.classList.remove('bg-gradient-to-r', 'from-primary', 'to-primary-container');
+                submitBtn.classList.add('bg-tertiary', 'text-on-tertiary');
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 500);
+            } else {
+                errorMessage.classList.remove('hidden');
+                submitBtn.innerText = 'Unlock System';
+            }
+        } catch (error) {
+            errorMessage.innerText = 'System error.';
+            errorMessage.classList.remove('hidden');
+            submitBtn.innerText = 'Unlock System';
+        }
+    });
+</script>
+</body></html>
