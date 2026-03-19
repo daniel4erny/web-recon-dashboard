@@ -2,10 +2,11 @@ import asyncio
 import socket
 import json
 import time
-from os import getenv
+import os
 from datetime import datetime
 from typing import List, Dict, Optional
 from urllib.parse import urlparse
+from dotenv import load_dotenv
 
 import httpx
 from fastapi import FastAPI, HTTPException
@@ -13,6 +14,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 # --- KONFIGURACE ---
+load_dotenv()
 API_KEY = os.getenv("API_KEY")
 
 try:
@@ -27,6 +29,7 @@ except ImportError:
 # --- MODELY ---
 
 class ScanRequest(BaseModel):
+    key: str = None
     target: str 
 
 # --- POMOCNÉ FUNKCE ---
@@ -139,7 +142,10 @@ app = FastAPI()
 
 @app.post("/")
 async def scanner(request: ScanRequest):
-    req_key = str(request.key)
+    if request.key:
+        req_key = str(request.key)
+    else:
+        req_key = "like not there litterally"
 
 
     if req_key == API_KEY: 
