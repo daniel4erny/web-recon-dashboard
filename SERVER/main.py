@@ -2,6 +2,7 @@ import asyncio
 import socket
 import json
 import time
+from os import getenv
 from datetime import datetime
 from typing import List, Dict, Optional
 from urllib.parse import urlparse
@@ -12,6 +13,8 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 # --- KONFIGURACE ---
+API_KEY = os.getenv("API_KEY")
+
 try:
     from ports import returnPorts
     from word_list import returnWordList
@@ -136,14 +139,20 @@ app = FastAPI()
 
 @app.post("/")
 async def scanner(request: ScanRequest):
-    clean_target = ziskej_cisteho_hosta(request.target)
-    if not clean_target:
-        raise HTTPException(status_code=400, detail="Neplatný cíl.")
+    req_key = str(request.key)
 
-    return StreamingResponse(
-        combined_scanner(clean_target),
-        media_type="application/x-ndjson"
-    )
+
+    if req_key == API_KEY: 
+        clean_target = ziskej_cisteho_hosta(request.target)
+        if not clean_target:
+            raise HTTPException(status_code=400, detail="Neplatný cíl.")
+
+        return StreamingResponse(
+            combined_scanner(clean_target),
+            media_type="application/x-ndjson"
+        )
+    else:
+        return("fuh u")
 
 @app.get("/")
 def test():
