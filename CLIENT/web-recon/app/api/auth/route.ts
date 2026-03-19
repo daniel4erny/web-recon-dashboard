@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
+  const MASTER_KEY = process.env.MASTER_KEY;
   try {
     const { key } = await request.json();
     const validKey = process.env.PASS;
@@ -14,7 +15,7 @@ export async function POST(request: NextRequest) {
       const response = NextResponse.json({ success: true });
       response.cookies.set({
         name: 'operator_key',
-        value: 'authenticated', // Může být i podepsaný JWT token apod.
+        value: MASTER_KEY ?? "no env", // Může být i podepsaný JWT token apod.
         httpOnly: true,
         path: '/',
         secure: process.env.NODE_ENV === 'production',

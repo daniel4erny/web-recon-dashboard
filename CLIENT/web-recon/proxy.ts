@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   // Check for some auth logic, such as an operator_key cookie
   const operatorKey = request.cookies.get('operator_key');
+  const MASTER_KEY = process.env.MASTER_KEY;
 
-  if (!operatorKey) {
+  if (operatorKey?.value != MASTER_KEY || !operatorKey) {
     // If unauthorized, proxy the request to the static restricted.html file
     const url = request.nextUrl.clone();
     url.pathname = '/restricted.html';
