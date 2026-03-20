@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 import httpx
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 # --- KONFIGURACE ---
@@ -140,6 +141,14 @@ async def combined_scanner(target_host: str):
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 @app.post("/")
 async def scanner(request: ScanRequest):
     if request.key:
@@ -165,7 +174,7 @@ def test():
     return {"status": "Server běží", "ports_to_scan": len(PORTS), "words_to_scan": len(WORDS)}
 
 @app.head("/")  # <--- Tohle přidej, aby Render dostal 200 OK
-def test():
+def test_head():
     return {
         "status": "Server běží",
         "loaded_ports_count": len(PORTS)

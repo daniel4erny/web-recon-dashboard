@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import ConsoleLogger from "@/app/consoleLogger";
+import ConsoleLogger from "@/app/components/consoleLogger";
 import PortInfo from "@/app/components/PortInfo";
 import EndpointInfo from "@/app/components/EndpointInfo";
 
-export default function LoggerTabs() {
+export default function LoggerTabs({ info }: { info?: string[] }) {
   const [activeTab, setActiveTab] = useState<"logs" | "ports" | "endpoints">("logs");
 
   return (
@@ -47,7 +47,7 @@ export default function LoggerTabs() {
 
       {/* Render active content */}
       <div className="grow overflow-hidden bg-surface-container-low/50 relative bg-[#131313]/50">
-        {activeTab === "logs" && <ConsoleLogger />}
+        {activeTab === "logs" && <ConsoleLogger info={info} />}
         {activeTab === "ports" && <PortInfo />}
         {activeTab === "endpoints" && <EndpointInfo />}
       </div>

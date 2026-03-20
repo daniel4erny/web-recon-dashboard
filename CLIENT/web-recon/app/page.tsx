@@ -1,8 +1,63 @@
+"use client"
+
 import LoggerTabs from "@/app/components/LoggerTabs";
 import ScanProgressBars from "@/app/components/ScanProgressBars";
 import PortsEndpointCounter from "@/app/components/PortsEndpointCounter";
+import {useState} from "react";
 
 export default function Home() {
+  const [logs, setLogs] = useState<string[]>([]);
+
+  const liveFetch = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          target: "google.com",
+          key: "nf0g2zjarhdzw3l8aktyy033wmkf97jy"
+        })
+      });
+
+      if (!response.body) return;
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        
+        // Zpracování Server-Sent Events (SSE) formátu nebo běžných řádků
+        const lines = chunk.split('\n');
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const newLog = JSON.parse(line.replace('data: ', ''));
+              setLogs((prev) => [...prev, newLog.text || JSON.stringify(newLog)]);
+            } catch (e) {
+              console.error("Parse error:", e);
+            }
+          } else if (line.trim().startsWith('{')) {
+            // Pokud by server vracel rovnou JSON bez "data: "
+            try {
+              const newLog = JSON.parse(line);
+              setLogs((prev) => [...prev, newLog.text || JSON.stringify(newLog)]);
+            } catch (e) {
+              console.error("Parse error:", e);
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+    }
+  };
+
   return (
     <div className="bg-background text-on-background font-body selection:bg-primary/30 min-h-screen flex flex-col">
       
@@ -18,7 +73,8 @@ export default function Home() {
             <div className="relative flex items-center bg-surface-container-highest rounded-lg border border-outline-variant/10 p-2 shadow-2xl">
               <span className="material-symbols-outlined text-primary ml-4">shutter_speed</span>
               <input className="w-full bg-transparent border-none focus:ring-0 text-on-surface font-mono py-4 px-6 text-lg placeholder:text-outline/50 outline-none" placeholder="https://target-node-01.internal or 192.168.1.1" type="text"/>
-              <button className="bg-linear-to-r from-primary to-primary-container text-on-primary px-8 py-4 rounded-lg font-headline font-bold uppercase tracking-wider text-sm transition-all hover:brightness-110 active:scale-95">
+              <button className="bg-linear-to-r from-primary to-primary-container text-on-primary px-8 py-4 rounded-lg font-headline font-bold uppercase tracking-wider text-sm transition-all hover:brightness-110 active:scale-95"
+              onClick={liveFetch}>
                 Start Scan
               </button>
             </div>
@@ -29,7 +85,7 @@ export default function Home() {
         <div className="grid grid-cols-12 gap-6">
           
           {/* Main Logs/Ports/Endpoints Panel */}
-          <LoggerTabs />
+          <LoggerTabs info={logs}/>
 
           {/* Right Summary Panel */}
           <div className="col-span-12 lg:col-span-4 flex flex-col gap-6">
